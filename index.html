@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Sequence Dock — DNA alignment</title>
+    <link rel="stylesheet" href="style.css" />
+    <script type="module" src="app.js"></script>
+  </head>
+  <body>
+    <header>
+      <a href="/">sequence<span>/</span>dock</a><span>BIOINFORMATICS · 14</span
+      ><select id="example" aria-label="Example sequences">
+        <option value="insertion">An insertion</option>
+        <option value="local">A shared local region</option>
+        <option value="reverse">Reverse complement</option>
+      </select>
+    </header>
+    <main>
+      <section class="intro">
+        <p class="eyebrow">PAIRWISE DNA ALIGNMENT</p>
+        <h1>Read between the bases.</h1>
+        <p>Find the shared sequence. Inspect every gap.</p>
+      </section>
+      <form id="form">
+        <div class="sequences">
+          <label
+            ><span id="reference-label">REFERENCE / A</span
+            ><textarea
+              id="reference"
+              aria-label="Reference DNA"
+              spellcheck="false"
+              rows="3"
+              maxlength="10000"
+            ></textarea
+            ><small id="reference-count"></small></label
+          ><label
+            ><span id="query-label">QUERY / B</span
+            ><textarea
+              id="query"
+              aria-label="Query DNA"
+              spellcheck="false"
+              rows="3"
+              maxlength="10000"
+            ></textarea
+            ><small id="query-count"></small
+          ></label>
+        </div>
+        <div class="controls">
+          <label
+            >Alignment<select id="mode">
+              <option value="global">Global · end to end</option>
+              <option value="local">Local · best region</option>
+            </select></label
+          ><label class="check"
+            ><input id="reverse" type="checkbox" /> Reverse-complement query</label
+          ><button class="primary">Align sequences ↗</button
+          ><button id="cancel" type="button" disabled>Cancel</button
+          ><label class="file"
+            >Load two-record FASTA<input id="fasta" type="file" accept=".fa,.fasta,.fna,text/plain"
+          /></label>
+        </div>
+        <details>
+          <summary>Scoring parameters</summary>
+          <div class="scoring">
+            <label
+              >Match reward<input
+                id="match"
+                type="number"
+                min="1"
+                max="5"
+                value="2"
+                required /></label
+            ><label
+              >Mismatch penalty<input
+                id="mismatch"
+                type="number"
+                min="0"
+                max="10"
+                value="2"
+                required /></label
+            ><label
+              >Gap open penalty<input
+                id="gapOpen"
+                type="number"
+                min="1"
+                max="10"
+                value="3"
+                required /></label
+            ><label
+              >Gap extension penalty<input
+                id="gapExtend"
+                type="number"
+                min="0"
+                max="5"
+                value="1"
+                required
+            /></label>
+          </div>
+          <p class="hint">
+            A gap of length L costs open + (L − 1) × extension. N is neutral (score 0), and is
+            excluded from known-base identity.
+          </p>
+        </details>
+      </form>
+      <p id="status" role="status">Ready.</p>
+      <section id="output" hidden>
+        <div class="metrics">
+          <div><span>Alignment score</span><strong id="score"></strong></div>
+          <div><span>Known-base identity</span><strong id="identity"></strong></div>
+          <div><span>Gap bases / runs</span><strong id="gaps"></strong></div>
+          <div><span>Ambiguous pairs</span><strong id="ambiguous"></strong></div>
+        </div>
+        <div class="alignment-head">
+          <h2>The alignment</h2>
+          <div class="downloads">
+            <button id="report">JSON report</button
+            ><button id="aligned-fasta">Aligned FASTA</button>
+          </div>
+        </div>
+        <p id="ranges" class="hint"></p>
+        <div id="alignment" class="alignment"></div>
+        <div class="cigar"><span>CIGAR</span><code id="cigar"></code></div>
+        <p class="hint">
+          | exact match · . mismatch · : ambiguous pair · blank gap. Coordinates are zero-based,
+          end-exclusive.
+        </p>
+        <details open>
+          <summary>Inside the dynamic program</summary>
+          <div class="matrix-layout">
+            <div>
+              <p class="axis">QUERY PREFIX → / REFERENCE PREFIX ↓</p>
+              <canvas
+                id="matrix"
+                tabindex="0"
+                aria-label="Alignment score matrix; arrow keys inspect neighboring cells"
+              ></canvas>
+            </div>
+            <div class="inspector">
+              <h2>Trace the decision.</h2>
+              <p class="hint">
+                Color shows the best score among match and gap states at each prefix pair. The white
+                line is the selected traceback.
+              </p>
+              <div class="pair">
+                <label>Reference prefix<input id="row" type="number" min="0" value="0" /></label
+                ><label>Query prefix<input id="column" type="number" min="0" value="0" /></label>
+              </div>
+              <button id="inspect">Inspect cell</button>
+              <p id="cell" role="status"></p>
+              <p class="hint">
+                Hover or click the matrix, use its arrow keys, or enter a prefix pair. Tied optimal
+                alignments are resolved deterministically; only one is shown.
+              </p>
+            </div>
+          </div>
+        </details>
+      </section>
+      <footer>
+        ACGTN DNA · AFFINE GAP MODEL · VERIFIED TRACEBACK<br />A bounded algorithm workbench for
+        learning and exploration.
+      </footer>
+    </main>
+  </body>
+</html>
