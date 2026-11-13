@@ -102,6 +102,9 @@ function sequenceLine(label, start, text, end) {
 function display(milliseconds) {
   const r = result;
   $('output').hidden = false;
+  const editorHadFocus = $('sequence-editor').contains(document.activeElement);
+  $('sequence-editor').open = false;
+  if (editorHadFocus) $('sequence-editor').querySelector('summary').focus({ preventScroll: true });
   $('score').textContent = r.score;
   $('identity').textContent = r.identity === null ? '—' : `${(100 * r.identity).toFixed(1)}%`;
   $('gaps').textContent = `${r.gaps} / ${r.gapRuns}`;
@@ -114,9 +117,9 @@ function display(milliseconds) {
   $('alignment').replaceChildren();
   let ref = r.referenceRange[0],
     query = r.queryRange[0];
-  for (let offset = 0; offset < r.alignedReference.length; offset += 60) {
-    const a = r.alignedReference.slice(offset, offset + 60),
-      b = r.alignedQuery.slice(offset, offset + 60),
+  for (let offset = 0; offset < r.alignedReference.length; offset += 40) {
+    const a = r.alignedReference.slice(offset, offset + 40),
+      b = r.alignedQuery.slice(offset, offset + 40),
       refEnd = ref + a.replaceAll('-', '').length,
       queryEnd = query + b.replaceAll('-', '').length,
       block = el('pre');

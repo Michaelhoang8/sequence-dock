@@ -12,6 +12,10 @@ python run.py
 
 Open http://127.0.0.1:8000/. Requires Python 3.10+ and a modern browser with module Web Workers. Use `--port 8833` for another port. No runtime packages or external services are needed. The server exposes only five static assets; sequence processing stays in the browser.
 
+## Interface
+
+The page opens on the alignment report. Expand **Sequences & scoring** to edit DNA, import FASTA, or change penalties; a successful alignment folds the editor away. Aligned bases are grouped into 40-column blocks, with coordinates, CIGAR, and identity below. **Score matrix & traceback** opens the cell inspector separately. Long alignment rows scroll within the report on narrow screens.
+
 ## Workflows
 
 - Paste reference/query DNA or load exactly two ungapped FASTA records. A small example is included in `docs/example.fasta`.
